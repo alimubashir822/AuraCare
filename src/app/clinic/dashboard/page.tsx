@@ -42,7 +42,7 @@ export default async function ClinicDashboard() {
 
   // Calculate department distribution for Recharts
   const deptCountMap: Record<string, number> = {};
-  assessments.forEach((ass) => {
+  assessments.forEach((ass: any) => {
     const deptName = ass.recommendedDept?.name || "General Medicine";
     deptCountMap[deptName] = (deptCountMap[deptName] || 0) + 1;
   });
@@ -63,7 +63,7 @@ export default async function ClinicDashboard() {
   ];
 
   // 4. Serialize doctors
-  const serializedDoctors = doctors.map((doc) => ({
+  const serializedDoctors = doctors.map((doc: any) => ({
     id: doc.id,
     name: doc.user.name,
     email: doc.user.email,

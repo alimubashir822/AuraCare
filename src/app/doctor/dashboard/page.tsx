@@ -53,7 +53,7 @@ export default async function DoctorDashboard() {
     clinicName: doctor.clinic?.name || "Independent Clinic",
   };
 
-  const serializedAppointments = doctor.appointments.map((app) => ({
+  const serializedAppointments = doctor.appointments.map((app: any) => ({
     id: app.id,
     dateTime: app.dateTime.toISOString(),
     status: app.status,

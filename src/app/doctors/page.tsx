@@ -27,14 +27,14 @@ export default async function Doctors(props: PageProps) {
     });
 
     // Extract unique specialties for filtering
-    const allSpecialties = doctors.map((d) => d.specialty);
+    const allSpecialties = doctors.map((d: any) => d.specialty);
     specialties = Array.from(new Set(allSpecialties)).sort();
   } catch (error) {
     console.error("Failed to load doctors:", error);
   }
 
   // Parse doctors for easier use in client component
-  const serializedDoctors = doctors.map((doc) => ({
+  const serializedDoctors = doctors.map((doc: any) => ({
     id: doc.id,
     name: doc.user.name,
     email: doc.user.email,

@@ -75,7 +75,7 @@ export default async function PatientDashboard() {
   }[] = [];
 
   // Add Assessments to timeline
-  patient.assessments.forEach((ass) => {
+  patient.assessments.forEach((ass: any) => {
     const formattedDate = new Date(ass.createdAt).toLocaleDateString("en-US", {
       month: "short",
       year: "numeric",
@@ -89,7 +89,7 @@ export default async function PatientDashboard() {
   });
 
   // Add Appointments to timeline
-  patient.appointments.forEach((app) => {
+  patient.appointments.forEach((app: any) => {
     const formattedDate = new Date(app.dateTime).toLocaleDateString("en-US", {
       month: "short",
       year: "numeric",
@@ -103,7 +103,7 @@ export default async function PatientDashboard() {
   });
 
   // Add Documents to timeline
-  patient.documents.forEach((doc) => {
+  patient.documents.forEach((doc: any) => {
     const formattedDate = new Date(doc.createdAt).toLocaleDateString("en-US", {
       month: "short",
       year: "numeric",
