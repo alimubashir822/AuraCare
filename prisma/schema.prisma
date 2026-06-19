@@ -1,0 +1,165 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         String    // "PATIENT", "DOCTOR", "CLINIC_ADMIN"
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  patient      Patient?
+  doctor       Doctor?
+}
+
+model Patient {
+  id               String          @id @default(uuid())
+  userId           String          @unique
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateOfBirth      String?
+  gender           String?
+  phone            String?
+  
+  // Insurance Details
+  insuranceProvider String?
+  insuranceMemberId String?
+  
+  allergies        String?
+  conditions       String?
+  
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  appointments     Appointment[]
+  assessments      Assessment[]
+  documents        Document[]
+}
+
+model Clinic {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctors   Doctor[]
+}
+
+model Doctor {
+  id               String          @id @default(uuid())
+  userId           String          @unique
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty        String          // e.g. "Cardiology", "Dermatology", "Pediatrics"
+  experience       Int             // in years
+  languages        String          // comma-separated, e.g. "English, Spanish"
+  bio              String
+  rating           Float           @default(5.0)
+  consultationFee  Float           @default(50.0)
+  hospital         String?
+  insuranceAccepted String?        // comma-separated list
+  
+  clinicId         String?
+  clinic           Clinic?         @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+  
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  appointments     Appointment[]
+}
+
+model MedicalDepartment {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  icon        String   // name of lucide icon
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assessments Assessment[]
+}
+
+model Assessment {
+  id                String             @id @default(uuid())
+  patientId         String?            // Optional for guest assessments
+  patient           Patient?           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  concern           String
+  symptoms          String             // JSON string of symptoms
+  ageGroup          String?
+  severity          String?            // "LOW", "MEDIUM", "HIGH", "CRITICAL"
+  duration          String?
+  summary           String?            // AI Guidance Summary (Markdown format)
+  recommendedDeptId String?
+  recommendedDept   MedicalDepartment? @relation(fields: [recommendedDeptId], references: [id], onDelete: SetNull)
+  recommendedAction String?            // "Emergency", "Consultation", "Self Care"
+  status            String             @default("COMPLETED") // "IN_PROGRESS", "COMPLETED"
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  aiResponses       AIResponse[]
+}
+
+model AIResponse {
+  id           String      @id @default(uuid())
+  assessmentId String
+  assessment   Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  prompt       String
+  content      String
+  type         String      // "QUESTION", "SUMMARY"
+  createdAt    DateTime    @default(now())
+}
+
+model Appointment {
+  id            String         @id @default(uuid())
+  patientId     String
+  patient       Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId      String
+  doctor        Doctor         @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  dateTime      DateTime
+  status        String         @default("PENDING") // "PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"
+  type          String         @default("VIDEO") // "VIDEO", "IN_PERSON"
+  reason        String?
+  notes         String?        // Doctor clinical notes
+  summaryBrief  String?        // AI Patient Consultation Brief
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Document {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  title         String
+  fileUrl       String?
+  category      String   // "REPORT", "PRESCRIPTION", "LAB_RESULT", "OTHER"
+  aiExplanation String?  // AI plain-english explanation of the report
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  userEmail String?
+  userRole  String?
+  action    String
+  details   String
+  createdAt DateTime @default(now())
+}
