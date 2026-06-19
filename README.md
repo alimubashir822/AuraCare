@@ -27,11 +27,27 @@ The platform serves three primary stakeholder categories: Patients, Doctors, and
 
 ---
 
+## 📱 Responsive UI/UX Architecture & Audit
+
+To deliver a premium SaaS experience, the user interface was audited and refactored using advanced responsive CSS systems:
+
+* **Mobile Optimizations (320px - 480px):**
+  * Stepper circles scale down (`h-7 w-7` on mobile) and labels adapt (`text-[9px]`), while secondary description details are hidden below the `sm` breakpoint to prevent layout overlapping.
+  * The patient dashboard sidebar menu transforms into a horizontal, scrollable, and non-wrapping button list.
+  * Form inputs for Date and Time inside booking modals stack vertically in a single-column layout.
+* **Tablet Layouts (481px - 1024px):**
+  * Recharts Pie charts are wrapped in a dynamic `min-h-[250px] h-auto md:h-[250px]` container, stacking the department legends underneath the chart cleanly on mobile/tablet without clipping text labels.
+  * Grid containers switch to two columns (`md:grid-cols-2`) to display quick health profiles side-by-side with appointments.
+* **Large Desktop Viewports (1440px+):**
+  * Wide grids, fluid containers, and layout wrappers limit maximum line lengths and widths to keep typography readable.
+
+---
+
 ## 🛠️ Technical Stack
 
-* **Framework:** Next.js 15 (App Router with dynamic routing)
+* **Framework:** Next.js 15 (App Router with Turbopack compilation)
 * **Language:** TypeScript
-* **Styling:** Tailwind CSS v4.0
+* **Styling:** Tailwind CSS v4.0 & PostCSS
 * **Database:** SQLite (via LibSQL client driver)
 * **ORM:** Prisma ORM
 * **Charts/Icons:** Recharts, Lucide React
@@ -46,7 +62,8 @@ c:\Users\Mubashir Ali\Desktop\SymptomChecker\
 │   ├── schema.prisma      # Relational Database Schema
 │   └── seed.js            # Mock Database Hydration Script
 ├── public/
-│   └── favicon.ico        # Custom Project Favicon
+│   ├── favicon.ico        # Custom Project Favicon
+│   └── healthcare-favicon.png
 ├── src/
 │   ├── app/
 │   │   ├── (public)       # Public Pages (Home, How It Works, Resources, Contact)
@@ -96,9 +113,19 @@ Open [http://localhost:3001](http://localhost:3001) in your browser. *(Note: Por
 
 ---
 
-## 🔐 Session Switcher (Testing & Debugging)
+## 🔐 Demo Accounts & Session Switcher
 
-To easily test the platform's multi-role capability, a Developer Quick Login page is configured at `/login` with pre-built credentials:
-* **Patient Portal:** Quick login as a patient to test the intake form, AI summaries, document explainers, and timelines.
-* **Doctor Workspace:** Access clinical notes and intakes.
-* **Clinic Admin Command Center:** View booking conversions, department metrics, and HIPAA audit trails.
+To easily test the platform's multi-role capability, navigate to `/login` and use the quick login shortcuts or input these pre-configured credentials:
+
+| Role | Email | Password | Features Checked |
+|---|---|---|---|
+| **Patient** | `patient@demo.com` | `password` | Symptom assessment history, booking confirmation, horizontal scrolling tabs |
+| **Doctor** | `doctor@demo.com` | `password` | Dr. Ahmed Bilal. Patient clinical intake summary checklist, upcoming slots |
+| **Clinic Admin** | `admin@demo.com` | `password` | Recharts dashboard charts, specialist directory grid, HIPAA compliance audit logs |
+
+---
+
+## 🩹 Development Fixes
+
+* **Fetch Stream Conflict:** Resolved a double stream parsing bug in `/assessment` where the `res.json()` was executed twice. This prevented the matched specialists from showing and caused an unhandled runtime error.
+* **Turbopack Build Manifest:** Fixed manifest compilation errors by separating the `next build` cache during simultaneous `next dev` testing runs.
